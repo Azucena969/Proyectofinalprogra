@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Biblioteca Digital Zu Reyes - Letras y Páginas</title>
+    <style>
+      :root {
+        --primary-color: #6b8e9a; /* Color principal suavizado */
+        --secondary-color: #d4e2e6; /* Color secundario suavizado */
+        --accent-color: #99b4be; /* Color de acento suavizado */
+        --text-color: #4a5a61; /* Color de texto más suave */
+        --bg-color: #f7fafb; /* Color de fondo más claro */
+        --border-radius: 12px; /* Bordes más redondeados */
+        --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-size: 14px; /* Letra más pequeña */
+      }
+
+      body {
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+      }
+
+      h1 {
+        color: var(--primary-color);
+        text-align: center;
+        margin-bottom: 25px;
+        font-size: 24px; /* Tamaño reducido */
+      }
+
+      h2 {
+        color: var(--primary-color);
+        margin-bottom: 15px;
+        font-size: 18px; /* Tamaño reducido */
+      }
+
+      .tabs {
+        display: flex;
+        margin-bottom: 20px;
+        background-color: var(--secondary-color);
+        border-radius: var(--border-radius);
+        overflow: hidden;
+      }
+
+      .tab {
+        padding: 12px 20px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        flex: 1;
+        text-align: center;
+      }
+
+      .tab.active {
+        background-color: var(--primary-color);
+        color: white;
+      }
+
+      .content {
+        display: none;
+      }
+
+      .content.active {
+        display: block;
+      }
+
+      .section {
+        background-color: white;
+        padding: 20px;
+        margin-bottom: 20px;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+      }
+
+      input, select {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 12px;
+        border: 1px solid #ddd;
+        border-radius: var(--border-radius);
+        font-size: 13px; /* Tamaño reducido */
+      }
+
+      button {
+        padding: 10px 15px;
+        background-color: var(--accent-color);
+        color: white;
+        border: none;
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        transition: background-color 0.3s;
+        font-size: 13px; /* Tamaño reducido */
+      }
+
+      button:hover {
+        background-color: var(--primary-color);
+      }
+
+      #bookList, #categoryList {
+        margin-top: 15px;
+        max-height: 300px;
+        overflow-y: auto;
+      }
+
+      .book-item, .category-item {
+        padding: 12px;
+        margin-bottom: 10px;
+        background-color: var(--secondary-color);
+        border-radius: var(--border-radius);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .book-info, .category-info {
+        flex: 1;
+      }
+
+      .book-actions, .category-actions {
+        display: flex;
+        gap: 8px;
+      }
+
+      .edit-btn, .delete-btn {
+        padding: 6px 10px;
+        font-size: 12px;
+        border-radius: var(--border-radius);
+      }
+
+      .edit-btn {
+        background-color: #a0c4d3; /* Color suave para editar */
+      }
+
+      .delete-btn {
+        background-color: #d3a0a0; /* Color suave para eliminar */
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Biblioteca Digital Zu Reyes - Letras y Páginas</h1>
+
+      <div class="tabs">
+        <div class="tab active" data-target="books">Gestión de Libros</div>
+        <div class="tab" data-target="categories">Gestión de Categorías</div>
+      </div>
+
+      <!-- Sección de Libros -->
+      <div id="books" class="content active">
+        <div class="section">
+          <h2>Registrar Nuevo Libro</h2>
+          <input type="text" id="bookTitle" placeholder="Título" />
+          <input type="text" id="bookAuthor" placeholder="Autor" />
+          <input type="text" id="bookISBN" placeholder="ISBN" />
+          <input
+            type="number"
+            id="bookPrice"
+            placeholder="Precio"
+            step="0.01"
+          />
+          <input type="number" id="bookStock" placeholder="Stock" />
+          <select id="bookCategory">
+            <option value="">Seleccionar Categoría</option>
+            <option value="1">Novela</option>
+            <option value="2">Historia</option>
+            <option value="3">Ciencia</option>
+            <option value="4">Informática</option>
+            <option value="5">Biografía</option>
+          </select>
+          <button onclick="addBook()">Registrar Libro</button>
+        </div>
+
+        <div class="section">
+          <h2>Lista de Libros</h2>
+          <input
+            type="text"
+            id="bookSearch"
+            placeholder="Buscar por título"
+            oninput="filterBooks()"
+          />
+          <div id="bookList"></div>
+        </div>
+      </div>
+
+      <!-- Sección de Categorías -->
+      <div id="categories" class="content">
+        <div class="section">
+          <h2>Registrar Nueva Categoría</h2>
+          <input
+            type="text"
+            id="categoryName"
+            placeholder="Nombre de la Categoría"
+          />
+          <button onclick="addCategory()">Crear Categoría</button>
+        </div>
+
+        <div class="section">
+          <h2>Lista de Categorías</h2>
+          <div id="categoryList"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Funcionalidad de las pestañas
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          // Desactivar todas las pestañas y contenidos
+          document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+          document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+          
+          // Activar la pestaña seleccionada y su contenido
+          tab.classList.add('active');
+          document.getElementById(tab.dataset.target).classList.add('active');
+        });
+      });
+
+      // Funciones de ejemplo para simular la funcionalidad
+      function addBook() {
+        alert('Función para añadir libro. Conectar con backend.');
+      }
+
+      function addCategory() {
+        alert('Función para añadir categoría. Conectar con backend.');
+      }
+
+      function filterBooks() {
+        console.log('Filtrando libros...');
+        // Implementar lógica de filtrado
+      }
+
+      // Simular carga de libros para ejemplo visual
+      window.onload = function() {
+        const bookList = document.getElementById('bookList');
+        
+        // Ejemplos de libros
+        const books = [
+          { title: 'Cien años de soledad', author: 'Gabriel García Márquez', isbn: '9789631420494' },
+          { title: 'El señor de los anillos', author: 'J.R.R. Tolkien', isbn: '9788445000663' }
+        ];
+        
+        // Crear elementos de lista de libros
+        books.forEach(book => {
+          const bookItem = document.createElement('div');
+          bookItem.className = 'book-item';
+          
+          const bookInfo = document.createElement('div');
+          bookInfo.className = 'book-info';
+          bookInfo.textContent = `${book.title} - ${book.author} (ISBN: ${book.isbn})`;
+          
+          const bookActions = document.createElement('div');
+          bookActions.className = 'book-actions';
+          
+          const editBtn = document.createElement('button');
+          editBtn.className = 'edit-btn';
+          editBtn.textContent = 'Editar';
+          
+          const deleteBtn = document.createElement('button');
+          deleteBtn.className = 'delete-btn';
+          deleteBtn.textContent = 'Eliminar';
+          
+          bookActions.appendChild(editBtn);
+          bookActions.appendChild(deleteBtn);
+          
+          bookItem.appendChild(bookInfo);
+          bookItem.appendChild(bookActions);
+          
+          bookList.appendChild(bookItem);
+        });
+
+        // Simular categorías
+        const categoryList = document.getElementById('categoryList');
+        
+        ['Novela', 'Historia', 'Ciencia', 'Informática', 'Biografía'].forEach(cat => {
+          const catItem = document.createElement('div');
+          catItem.className = 'category-item';
+          
+          const catInfo = document.createElement('div');
+          catInfo.className = 'category-info';
+          catInfo.textContent = cat;
+          
+          const catActions = document.createElement('div');
+          catActions.className = 'category-actions';
+          
+          const editBtn = document.createElement('button');
+          editBtn.className = 'edit-btn';
+          editBtn.textContent = 'Editar';
+          
+          const deleteBtn = document.createElement('button');
+          deleteBtn.className = 'delete-btn';
+          deleteBtn.textContent = 'Eliminar';
+          
+          catActions.appendChild(editBtn);
+          catActions.appendChild(deleteBtn);
+          
+          catItem.appendChild(catInfo);
+          catItem.appendChild(catActions);
+          
+          categoryList.appendChild(catItem);
+        });
+      };
+    </script>
+  </body>
+</html>
